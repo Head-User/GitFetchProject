@@ -1,0 +1,203 @@
+<html>
+
+<head>
+    <h1> USER COMMIT ANALYTICS</h1>
+    <h2>(Lines of Code checked in by each user on a weekly basis)</h2>
+   
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="javastyle.css">
+  <link rel="icon" type="image/png" href="crop.png">
+ 
+  <title>Reports</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+</head>
+<style>
+    input
+    {
+      width: 150px;
+      height: 5%;
+      background-color: blueviolet;
+      color: white;
+      font-size: 20px;
+      
+      
+    }
+    
+</style>
+
+<body style="text-align: center;">
+
+    Select the repository:
+    <select id="myRepo" name="Select"></select>
+
+  <canvas id="chart"> </canvas> <!-- </di Defining the canvas -->
+  <!-- <div class="chart-container" > -->
+    
+
+<!-- </div> -->
+
+<input type="button" value="UPDATE" onclick="refreshPage()">
+
+<span id="dat"></span>
+<span id="inf"></span>
+</body>
+
+<script type="text/javascript">
+Chart.defaults.global.defaultFontFamily='LatoBold'; //Setting attributes
+Chart.defaults.global.defaultFontColor='#000';
+Chart.defaults.global.defaultFontSize=20;
+
+
+const xlabels=[];
+const yax=[];            
+const yax2=[];
+const yax3=[];
+const ylabel1=[];
+const ylabel2=[];
+const ylabel3=[];
+const newdata=ylabel1;
+function refreshPage()
+{
+    location.reload();
+  
+}
+// function updateChart()
+// {
+//   myChart.data.datasets[0].data=[20,30,40,50,60];
+//   myChart.update();
+// };
+async function markChart()        //Function for making the chart
+{
+const ctx = document.getElementById('chart').getContext('2d');
+
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: xlabels,
+        datasets: [{                            //Defining the dataset
+            label: ylabel1,
+            data: yax,
+            barThickness:20,
+            backgroundColor: ['yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow'],
+            borderColor: [ 'black','black','black','black','black','black','black','black','black','black','black','black','black','black'],
+            borderWidth: 1
+            
+
+        },
+        {
+        
+            label: ylabel2,
+            data: yax2,
+            barThickness:20,
+            backgroundColor: ['rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)','rgb(200,0,0)'],
+            borderColor: [ 'black','black','black','black','black','black','black','black','black','black','black','black','black','black','black'],
+            borderWidth: 1
+        },
+        {
+            label: ylabel3,
+            data:yax3,
+            barThickness:20,
+            backgroundColor: ['cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan'],
+            borderColor: [ 'black','black','black','black','black','black','black','black','black','black','black','black','black','black'],
+            borderWidth: 1
+        }]
+        
+},
+
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    legend:{position:'top'}, 
+      title:{
+        display:true,
+        text:'Y Axis: Lines of Code, X Axis: No. of Weeks'
+      
+      },
+    scales:{
+      yAxes:[{
+        scaleLabel:{
+          labelString:'Lines Added',    //Adding the labels on the axes using scaleLabel
+          display:true,
+          
+          
+        },
+        
+        
+      }],
+      xAxes:[{
+        
+        scaleLabel:{
+          labelString:'Weeks',
+          display:true,
+          
+        } 
+
+      }]
+    }
+  }
+  
+  })
+  
+
+
+
+}
+
+const api_url='https://api.github.com/repos/Head-User/Hello_World/stats/contributors'; //API used for the project
+    var ctr=0;
+    var weekLength;
+    async function getData()    
+    { 
+      const response= await fetch(api_url)   //Fetching a response from the api in the constant, 'response'
+      const data=await response.json();      //Getting the response in the JSON format in 'data'
+      var i=0,j=0,row,cell1,cell2,cell3,cell4;
+      var m;
+      
+      console.log(data);  //displaying the obtained data on console
+      length=data.length;   //storing the length of the data in 'length'
+      console.log(length);
+      for(m=0;m<length;m++)      //running a loop from 0 to the length of the string
+    {
+     weekLength=((data[m].weeks).length);  
+     console.log(weekLength);
+        //Getting the total number of weeks in 'weekLength'
+        //for(m=0;m<3;m++)
+        {
+         ylabel1.push(data[m].author.login);   
+         ylabel2.push(data[m+1].author.login);   //Further pushing the user on the chart
+    
+         ylabel3.push(data[m+2].author.login);
+        }
+        
+        for(j=0;j<=weekLength;j++)  //Loop for weeks
+      {
+        xlabels.push('Week '+ j);   //Pushing the number of weeks data on x-axis
+        //for(m=0;m<length;m++)
+       // for(i=0;i<length;i++)
+        {
+        {
+          
+        yax.push( data[m].weeks[j].a-data[m].weeks[j].d);  
+        yax2.push( data[m+1].weeks[j].a-data[m+1].weeks[j].d);  
+        yax3.push( data[m+2].weeks[j].a-data[m+2].weeks[j].d);  
+        
+        }
+        } 
+      
+        //  yax2.push(data[m+1].weeks[j].a-data[m+1].weeks[j].d);  //Displaying the user's lines of code here on the y-axis
+        //  yax3.push(data[m+2].weeks[j].a-data[m+2].weeks[j].d);
+        
+
+      }
+     
+      }
+     
+    }
+    markChart();  
+  getData();
+  //getRepo();
+  //Users();
+ 
+   </script>
+</html>
