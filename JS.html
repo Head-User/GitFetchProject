@@ -1,0 +1,184 @@
+<html>
+
+<head>
+    <h1> USER COMMIT ANALYTICS</h1>
+    <h2>(Lines of Code checked in by each user on a weekly basis)</h2>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="javastyle.css">
+  <link rel="icon" type="image/png" href="crop.png">
+  <title>Reports</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+</head>
+<style>
+
+      input
+      {
+        width: 150px;
+        height: 5%;
+        background-color: blueviolet;
+        color: white;
+        font-size: 20px;
+        
+      }
+
+    
+</style>
+<body style="text-align: center;">
+  Select the repository:
+    <select id="myRepo" name="Select" ></select>
+  <div class="container">
+    <canvas id="myChart" ></canvas>
+  </div>
+
+<span id="dat"></span>
+<span id="inf"></span>
+<span id="selOp"></span>
+</body>
+<script type="text/javascript">
+var i;
+var ctx;
+var api_url;
+var xlabels=[];
+var yax=[];            
+var yax2=[];
+var yax3=[];
+var ylabel1=[];
+var ylabel2=[];
+var ylabel3=[];
+var my_variable;
+var api_url;
+var sel=document.getElementById("myRepo");
+var repo_url='https://api.github.com/users/Head-User/repos';
+
+function getOption()
+  {
+    
+      my_variable=sel.options[sel.selectedIndex].text;
+   api_url='https://api.github.com/repos/Head-User/'+my_variable+'/stats/contributors';
+   console.log(my_variable); 
+   getDate();                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+   getData();
+  }
+  async function getRepo()
+{
+    const res=await fetch(repo_url);
+    const info=await res.json();
+    repolength=info.length;
+    for(i=0;i<repolength;i++)
+    {
+      var option=document.createElement("option");
+      option.text=info[i].name;
+      sel.add(option);
+    }
+  document.getElementById("myRepo").addEventListener("change",getOption);
+  } 
+
+  
+
+async function getData()
+{
+  var a;
+  const response= await fetch(api_url);
+  const data=await response.json();
+  length=data.length;
+  console.log(data);
+  for(m=0;m<length;m++)      //running a loop from 0 to the length of the string
+    {
+        weekLength=((data[m].weeks).length); 
+        ylabel1=(data[0].author.login);  
+          //ylabel1 has the names of the users 
+    }
+    ylabel2=(data[1].author.login);
+    ylabel3=(data[2].author.login);
+    
+    for(j=0;j<=weekLength;j++)
+    {
+      try{
+        yax+=(data[0].weeks[j].a)-(data[0].weeks[j].d);
+        yax2+=(data[1].weeks[j].a)-(data[1].weeks[j].d);
+        yax3+=(data[2].weeks[j].a)-(data[2].weeks[j].d);
+        }
+        catch(err)
+        {
+          console.log(err.message);
+        }
+        
+        // yax2=(data[1].weeks[j].a)-(data[1].weeks[j].d);
+        // yax3=(data[2].weeks[j].a)-(data[2].weeks[j].d);
+        //console.log(yax);
+  }
+  console.log(yax);
+  console.log(yax2);
+  console.log(yax3);
+      
+    
+
+var myChart=document.getElementById("myChart").getContext('2d');
+var stackedChart=new Chart(myChart,{
+  type:'bar',
+  data:{
+    
+    labels:['Week 1', 'Week 2','Week 3','Week 4','Week 5','Week 6', 'Week 7','Week 8','Week 9','Week 10','Week 11', 'Week 12','Week 13','Week 14','Week 15'],
+    datasets: [{
+       label:ylabel1,
+       data:yax,
+       backgroundColor:'pink',
+    },
+    {
+     
+     label:ylabel2,
+      data:yax2,
+    backgroundColor:'blue',
+ },
+ {
+    label:ylabel3,
+    data:yax3,
+    backgroundColor:'red',
+ }
+    
+   ]},
+       options:{
+         scales:{
+          xAxes:
+           [{stacked:true,
+          scaleLabel:{
+          labelString:'Number of weeks',    //Adding the labels on the axes using scaleLabel
+          display:true}}],
+           yAxes:[{
+             ticks:{beginAtZero:true,
+             stacked:true},
+             scaleLabel:{
+             labelString:'Lines of Code',    //Adding the labels on the axes using scaleLabel
+              display:true}}]
+          
+         }
+       }
+      });
+}
+
+Chart.defaults.global.defaultFontFamily='LatoBold'; //Setting attributes
+Chart.defaults.global.defaultFontColor='#000';
+Chart.defaults.global.defaultFontSize=20;
+    
+async function getDate()
+  { const date_url='https://api.github.com/repos/Head-User/'+my_variable+'/commits'
+      const rep=await fetch(date_url);
+      const st=await rep.json();
+      var datelength=st.length;
+        console.log(datelength);
+        console.log(st);
+        for(i=0;i<30;i++)
+        {
+        console.log(st[i].commit.committer.date);
+        var commit=(st[i].commit.committer.date);
+        
+        }
+  }
+
+getRepo();
+getOption();
+
+</script>
+</html>
